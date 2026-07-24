@@ -3,3 +3,6 @@ __pycache__/
 *.pt 
 *.pth 
 .env 
+ckpt/
+img/
+statistics/
