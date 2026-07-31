@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 import numpy as np
 import pandas as pd
-from sklearn.metrics import precision_recall_curve, roc_curve, auc, average_precision_score
+from sklearn.metrics import average_precision_score, precision_recall_curve, roc_curve, auc
 from tqdm import tqdm
 
 # --- 1. ИМПОРТЫ МОДЕЛЕЙ ---
