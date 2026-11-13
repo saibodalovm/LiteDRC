@@ -1,5 +1,7 @@
 # LiteDRC
 
+**Official repository for the paper:** *"Lightweight Uncertainty-Aware Framework for Cross-Domain DRC Violation Prediction"*
+
 Lightweight cross-PDK regional Design Rule Checking (DRC) hotspot prediction with Beta Evidential Deep Learning (EDL) for epistemic uncertainty estimation.
 
 <p align="center">
