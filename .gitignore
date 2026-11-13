@@ -7,3 +7,9 @@ img/
 statistics/
 *.csv
 .venv/
+outputs/
+plots/
+visualization_preds/
+visualizations/
+*.pyc
+__pycache__/

@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 import json
+import argparse
 import numpy as np
 from pathlib import Path
 import re
@@ -9,15 +11,15 @@ pattern = re.compile(
     r"HP_(?P<HP>[\d\.]+)_VW_(?P<VW>[\d\.]+)_VS_(?P<VS>[\d\.]+)_VP_(?P<VP>[\d\.]+)"
 )
 
-def collect_global_zscore_stats(data_dir):
+def collect_global_zscore_stats(data_dir, output_path=None):
     data_dir = Path(data_dir)
     files = list(data_dir.glob("*.npz"))
     
-    # Ключи, которые мы оставляем (IO выкинут)
+    # Features to collect (IO is excluded)
     features = ["CLK", "CU", "AR", "HW", "HS", "HP", "VW", "VS", "VP"]
     values = {k: [] for k in features}
     
-    print(f"Сбор глобальной Z-score статистики по {len(files)} файлам...")
+    print(f"Collecting global Z-score statistics from {len(files)} files in {data_dir}...")
     
     for f in files:
         match = pattern.search(f.name)
@@ -26,22 +28,26 @@ def collect_global_zscore_stats(data_dir):
             
         d = match.groupdict()
         
-        # 1. Спец. обработка для CLK (чиним asap7 и берем log1p)
+        # 1. Special processing for CLK (asap7 correction and log1p)
         clk_raw = float(d["CLK"])
         if d["pdk"] == "asap7":
             clk_raw /= 1000.0
         values["CLK"].append(np.log1p(clk_raw))
         
-        # 2. Остальные параметры просто собираем
+        # 2. Collect other parameters
         for k in features[1:]:
             values[k].append(float(d[k]))
             
-    # Вычисляем Mean и Std для Z-score
+    if not values["CLK"]:
+        print("[ERROR] No valid files found to collect statistics!")
+        return
+
+    # Calculate Mean and Std for Z-score
     stats = {"z_score": {}}
     for k in features:
         arr = np.array(values[k])
         std = float(np.std(arr))
-        # Защита от нулевой дисперсии (например для HW внутри одного сета, если вдруг)
+        # Protection against zero variance
         if std == 0.0:
             std = 1.0 
             
@@ -49,11 +55,23 @@ def collect_global_zscore_stats(data_dir):
             "mean": float(np.mean(arr)),
             "std": std
         }
+    
+    if output_path is None:
+        output_path = data_dir / "global_zscore_stats.json"
+    else:
+        output_path = Path(output_path)
         
-    with open(data_dir / "global_zscore_stats.json", "w") as f:
+    with open(output_path, "w") as f:
         json.dump(stats, f, indent=4)
         
-    print("Глобальная Z-score статистика сохранена!")
+    print(f"Global Z-score statistics saved to {output_path}!")
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Collect global Z-score statistics from processed .npz files.")
+    parser.add_argument("--data-dir", type=Path, required=True, help="Directory containing processed .npz files (usually 'train').")
+    parser.add_argument("--output", type=Path, help="Output path for the .json file. Defaults to data-dir/global_zscore_stats.json.")
+    return parser.parse_args()
 
 if __name__ == "__main__":
-    collect_global_zscore_stats(r"J:\processed_dataset\train")
+    args = parse_args()
+    collect_global_zscore_stats(args.data_dir, args.output)
