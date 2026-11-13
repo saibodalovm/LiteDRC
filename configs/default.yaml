@@ -1,0 +1,21 @@
+model:
+  in_channels: 3
+  num_classes: 3
+  base_filters: 32
+  pdk_dim: 9
+  num_pdks: 4
+  pdk_embed_dim: 8
+  drop_prob: 0.15
+  use_film: true
+
+data:
+  patch_size: 64
+  window_size: 8
+  samples_per_file: 5
+
+training:
+  batch_size: 512
+  epochs: 200
+  lr: 0.0002
+  weight_decay: 0.01
+  annealing_epochs: 50
