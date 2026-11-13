@@ -2,6 +2,12 @@
 
 Lightweight cross-PDK regional Design Rule Checking (DRC) hotspot prediction with Beta Evidential Deep Learning (EDL) for epistemic uncertainty estimation.
 
+<p align="center">
+  <img src="assets/chip_prediction_example.png" alt="Full-chip DRC prediction and epistemic uncertainty on sky130 (keccak)" width="95%">
+  <br>
+  <em>Full-chip regional DRC prediction and Beta-EDL epistemic uncertainty (<i>u</i>) on <code>sky130</code> (<code>keccak</code> design).</em>
+</p>
+
 LiteDRC takes `64 × 64` pre-CTS physical feature patches (`RUDY`, `pin_density`, `placement_density`, plus optional `VDD`/`VSS` power-grid distance channels) conditioned on PDK metadata and predicts 3-class DRC violation maps (`Metal Spacing`, `Short`, `Other`) on an `8 × 8` regional GCell grid.
 
 ---
