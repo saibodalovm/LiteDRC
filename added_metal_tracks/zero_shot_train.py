@@ -4,11 +4,12 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import numpy as np
+from torch.utils.data import Subset
 from sklearn.metrics import average_precision_score
 # Импортируем наши новые модули
 from models.Encoder import LightweightRegionNet
 from models.EncoderCrossAtt import LightweightRegionNet as LightweightRegionNetAttn 
-from patch_dataset import EDAChipDataset
+from added_metal_tracks.patch_dataset import EDAChipDataset
 
 # ============================================================================
 # 1. ЛОСС-ФУНКЦИЯ (Multi-Label Focal Loss)
@@ -159,10 +160,6 @@ def validate(model, dataloader, criterion, device):
 
     return running_loss / len(dataloader), val_pr_auc
 
-
-# ============================================================================
-# 4. ЗАПУСК
-# ============================================================================
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Используем устройство: {device}")
@@ -175,44 +172,83 @@ def main():
     EPOCHS = 200
     LR = 0.0002  
     
-    train_dataset = EDAChipDataset(data_dir=TRAIN_DIR, stats_path="J:/processed_dataset/train/global_zscore_stats.json", patch_size=PATCH_SIZE, samples_per_file=5)
-    test_dataset = EDAChipDataset(data_dir=TEST_DIR, stats_path="J:/processed_dataset/train/global_zscore_stats.json", patch_size=PATCH_SIZE, samples_per_file=2)
+    # --- НАСТРОЙКИ ZERO-SHOT ЭКСПЕРИМЕНТА ---
+    # Меняй эти переменные местами для Эксперимента 1 и Эксперимента 2
+    TRAIN_PDK = "sky130"   # Оставляем в обучающей выборке ТОЛЬКО этот завод
+    TEST_PDK = "gf180"   # Тестируем ТОЛЬКО на этом заводе
+    # ----------------------------------------
     
-    print(f"Тренировочных файлов: {len(train_dataset.files)} | Тестовых файлов: {len(test_dataset.files)}")
+    train_dataset = EDAChipDataset(data_dir=TRAIN_DIR, stats_path="J:/processed_dataset/train/global_zscore_stats.json", patch_size=PATCH_SIZE, samples_per_file=5, use_distances=True)
+    test_dataset = EDAChipDataset(data_dir=TEST_DIR, stats_path="J:/processed_dataset/train/global_zscore_stats.json", patch_size=PATCH_SIZE, samples_per_file=2, use_distances=True)
+    
+    # Фильтруем списки файлов (предполагаем, что имя завода есть в названии файла/пути)
+    train_indices = [
+        i for i in range(len(train_dataset)) 
+        if TRAIN_PDK in str(train_dataset.files[i // 5])
+    ]
+    test_indices = [
+        i for i in range(len(test_dataset)) 
+        if TRAIN_PDK in str(test_dataset.files[i // 2])
+    ]
 
-    train_weights = train_dataset.sample_weights(power=0.2, floor=1.0)
+    val_target_indices = [
+        i for i in range(len(test_dataset)) 
+        if TEST_PDK in str(test_dataset.files[i // 2])
+    ]
+    
+    print(f"\n🚀 ЧЕСТНЫЙ ZERO-SHOT: Учим на {TRAIN_PDK.upper()} -> Тестируем на {TEST_PDK.upper()}")
+    print(f"Трейн патчей: {len(train_indices)} | Валидация Source: {len(val_target_indices)} | Тест Target: {len(val_target_indices)}\n")
+
+    # 3. Оборачиваем в Subset
+    train_subset = Subset(train_dataset, train_indices)
+    test_subset = Subset(test_dataset, test_indices)
+    val_target_subset = Subset(test_dataset, val_target_indices)
+
+    # 4. Генерируем веса для ВСЕГО датасета, а потом фильтруем только нужные
+    all_train_weights = train_dataset.sample_weights(power=0.2, floor=1.0)
+    filtered_train_weights = [all_train_weights[i] for i in train_indices]
+    
     train_sampler = torch.utils.data.WeightedRandomSampler(
-        weights=train_weights, num_samples=len(train_weights), replacement=True
+        weights=filtered_train_weights, num_samples=len(filtered_train_weights), replacement=True
     )
     
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=2, pin_memory=True) 
-    #train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, num_workers=2, pin_memory=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2, pin_memory=True)
+    # 5. Передаем в лоадеры наши Subset-ы
+    train_loader = DataLoader(train_subset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=2, pin_memory=True) 
+    test_loader = DataLoader(test_subset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2, pin_memory=True)
+    val_target_loader = DataLoader(val_target_subset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2, pin_memory=True)
     
     # ----------------------------------------------------
     # ИНИЦИАЛИЗАЦИЯ НОВОЙ МОДЕЛИ И ЛОССА
     # ----------------------------------------------------
-    model = LightweightRegionNetAttn(in_channels=3, num_classes=3, use_film=True).to(device)
+    # ВНИМАНИЕ: Для честного теста сначала обучи No_FiLM (use_film=False), 
+    # а потом CrossAttention (use_film=True), чтобы было с чем сравнивать!
+    model = LightweightRegionNetAttn(in_channels=5, num_classes=3, use_film=True).to(device) 
+    #model = LightweightRegionNet(in_channels=5, num_classes=3, use_film=True).to(device)
+    
     criterion = BinaryFocalLossWithLogits(alpha=0.75, gamma=2.0, reduction='mean')
     optimizer = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=1e-2)
     scheduler = CosineAnnealingLR(optimizer, T_max=EPOCHS, eta_min=1e-6)
     
     best_val_pr_auc = 0.0
+    # Динамическое имя для сохранения весов
+    save_path = f"ckpt/train_sky_true_DISTANCE_MAPS/best_model_zeroshot_train_{TRAIN_PDK}_test_{TEST_PDK}_attn.pth"
     
     for epoch in range(EPOCHS):
         t_loss, t_f1, t_rec, t_prec, t_short = train_epoch(model, train_loader, optimizer, criterion, device)
-        v_loss, v_pr_auc = validate(model, test_loader, criterion, device)
+        v_loss_source, v_pr_source = validate(model, test_loader, criterion, device)
+        v_loss_target, v_pr_target = validate(model, val_target_loader, criterion, device)
 
         scheduler.step()
         
         print(f"Эпоха {epoch+1:03d}/{EPOCHS} | LR: {optimizer.param_groups[0]['lr']:.6f}")
-        print(f"  [Train] Loss: {t_loss:.4f} | Global F1: {t_f1*100:.1f}% | Short F1: {t_short*100:.1f}%")
-        print(f"  [Val]   Loss: {v_loss:.4f} | Global PR-AUC: {v_pr_auc:.4f}")
+        print(f"  [Train] Loss: {t_loss:.4f} | Global F1: {t_f1*100:.1f}%")
+        print(f"  [Val SOURCE ({TRAIN_PDK})] PR-AUC: {v_pr_source:.4f}  <-- ORACLE")
+        print(f"  [Val TARGET ({TEST_PDK})] PR-AUC: {v_pr_target:.4f}  <-- ZERO-SHOT")
         
-        if v_pr_auc > best_val_pr_auc:
-            best_val_pr_auc = v_pr_auc
-            torch.save(model.state_dict(), "best_lightweight_region_net_crossattn_sky_and_gf.pth")
-            print(f"  --> [СОХРАНЕНО] Новый лучший Global PR-AUC: {v_pr_auc:.4f}")
+        if v_pr_source > best_val_pr_auc:
+            best_val_pr_auc = v_pr_source
+            torch.save(model.state_dict(), save_path)
+            print(f"  --> [СОХРАНЕНО] Новый лучший Oracle PR-AUC: {v_pr_source:.4f} (в этот момент Zero-Shot = {v_pr_target:.4f})")
         print("-" * 60)
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ from sklearn.metrics import average_precision_score
 # Импортируем наши новые модули
 from models.Encoder import LightweightRegionNet
 from models.EncoderCrossAtt import LightweightRegionNet as LightweightRegionNetAttn 
-from patch_dataset import EDAChipDataset
+from data_processing.patch_dataset import EDAChipDataset
 
 # ============================================================================
 # 1. ЛОСС-ФУНКЦИЯ (Multi-Label Focal Loss)

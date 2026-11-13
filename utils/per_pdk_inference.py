@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 # Импортируем твои модули
 from models.Encoder import LightweightRegionNet
-from patch_dataset import EDAChipDataset
+from data_processing.patch_dataset import EDAChipDataset
 
 IDX_TO_PDK = {0: "asap7", 1: "freepdk45", 2: "gf180", 3: "sky130"}
 

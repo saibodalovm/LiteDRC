@@ -6,7 +6,7 @@ from sklearn.metrics import average_precision_score
 # Импортируем твои модули
 from models.EncoderCrossAtt import LightweightRegionNet as LightweightRegionNetAttn 
 from models.Encoder import LightweightRegionNet
-from patch_dataset import EDAChipDataset
+from data_processing.patch_dataset import EDAChipDataset
 
 def get_pr_auc(model, dataloader, device):
     model.eval()
@@ -29,12 +29,12 @@ def main():
     print(f"Используем устройство: {device}")
     
     # --- НАСТРОЙКИ ---
-    TARGET_PDK = "gf180" # ВАЖНО: Тестируем на GF180!
+    TARGET_PDK = "sky130" # ВАЖНО: Тестируем на GF180!
     TEST_DIR = r"J:\processed_dataset\val"
     STATS_PATH = r"J:\processed_dataset\train\global_zscore_stats.json"
     
     # Путь к твоей лучшей модели CrossAttention, обученной на GF180
-    WEIGHT_PATH = "ckpt/train_gf_true/best_model_zeroshot_train_gf180_test_sky130_FiLM.pth"
+    WEIGHT_PATH = "ckpt/train_sky_true/best_model_zeroshot_train_sky130_test_gf180_attn.pth"
     
     print(f"Загрузка тестового датасета из {TEST_DIR}...")
     # Обязательно mode='test' для честного скользящего окна по всему чипу
@@ -52,8 +52,8 @@ def main():
     
     # Инициализация и загрузка модели
     print("Загрузка весов модели CrossAttention...")
-    #model = LightweightRegionNetAttn(in_channels=3, num_classes=3, use_film=True).to(device)
-    model = LightweightRegionNet(in_channels=3, num_classes=3, use_film=True).to(device)
+    model = LightweightRegionNetAttn(in_channels=3, num_classes=3, use_film=True).to(device)
+    #model = LightweightRegionNet(in_channels=3, num_classes=3, use_film=True).to(device)
     model.load_state_dict(torch.load(WEIGHT_PATH, map_location=device))
     
     # Запуск оценки

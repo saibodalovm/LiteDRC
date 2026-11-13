@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 # Импортируем наши новые модули
 from models.Encoder import LightweightRegionNet
-from patch_dataset import EDAChipDataset
+from data_processing.patch_dataset import EDAChipDataset
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
