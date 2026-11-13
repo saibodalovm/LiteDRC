@@ -97,9 +97,9 @@ def main():
     batch_size = config.get("training", {}).get("batch_size", 128)
     
     weights_map = {
-        "Baseline": "ckpt/train_gf_true_DERICHLE/best_model_zeroshot_train_gf180_test_sky130_evidential.pth",
-        "FiLM": "ckpt/train_gf_true_DERICHLE/best_model_zeroshot_train_gf180_test_sky130_evidential_FiLM.pth",
-        "CrossAttention": "ckpt/train_gf_true_DERICHLE/best_model_zeroshot_train_gf180_test_sky130_evidential_attn.pth"
+        "Baseline": "ckpt/zero_shot/gf180_to_sky130_edl_none.pth",
+        "FiLM": "ckpt/zero_shot/gf180_to_sky130_edl_film.pth",
+        "CrossAttention": "ckpt/zero_shot/gf180_to_sky130_edl_cross_attn.pth"
     }
     
     results_data = []
