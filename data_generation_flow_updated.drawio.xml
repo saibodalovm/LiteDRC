@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net">
+  <diagram name="Страница-1" id="sDDZt_H4D05cqX_nyjL6">
+    <mxGraphModel dx="1032" dy="676" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Stage 1: Inputs & Design Space -->
+        <mxCell id="stage-1" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#f8fafc;strokeColor=#94a3b8;strokeWidth=1.2;fontStyle=1;fontSize=13;fontColor=#1e293b;startSize=28;rounded=1;arcSize=8;shadow=0;" value="1. Inputs &amp; Design Space" vertex="1">
+          <mxGeometry height="240" width="200" x="20" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="s1-c1" parent="stage-1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="&lt;b&gt;RTL Benchmark Suite&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#475569&quot; style=&quot;font-size: 11px;&quot;&gt;40 Designs (OpenABC-D, OpenCores)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="176" x="12" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="s1-c2" parent="stage-1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="&lt;b&gt;Target PDKs&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#475569&quot; style=&quot;font-size: 11px;&quot;&gt;Sky130, GF180, ASAP7, FreePDK45&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="176" x="12" y="102" as="geometry" />
+        </mxCell>
+        <mxCell id="s1-c3" parent="stage-1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="&lt;b&gt;DSE Parameter Sweep&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#475569&quot; style=&quot;font-size: 11px;&quot;&gt;Utilization, Aspect Ratio, PDN, Clock&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="176" x="12" y="166" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow 1 -> 2 -->
+        <mxCell id="arr-1-2" edge="1" parent="1" source="stage-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.8;strokeColor=#475569;endArrow=block;endFill=1;endSize=6;" target="stage-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Stage 2: Automated Physical Design Flow -->
+        <mxCell id="stage-2" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#eff6ff;strokeColor=#60a5fa;strokeWidth=1.2;fontStyle=1;fontSize=13;fontColor=#1e3a8a;startSize=28;rounded=1;arcSize=8;shadow=0;" value="2. Automated Physical Design Flow" vertex="1">
+          <mxGeometry height="240" width="220" x="250" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="s2-c1" parent="stage-2" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#bfdbfe;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="Logic Synthesis (Yosys)" vertex="1">
+          <mxGeometry height="36" width="190" x="15" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="s2-c2" parent="stage-2" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#bfdbfe;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="Floorplanning &amp;amp; Placement" vertex="1">
+          <mxGeometry height="36" width="190" x="15" y="86" as="geometry" />
+        </mxCell>
+        <mxCell id="s2-c3" parent="stage-2" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#bfdbfe;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="Clock Tree Synthesis (CTS)" vertex="1">
+          <mxGeometry height="36" width="190" x="15" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="s2-c4" parent="stage-2" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#bfdbfe;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="Routing &amp;amp; Signoff DRC" vertex="1">
+          <mxGeometry height="36" width="190" x="15" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="s2-a1" edge="1" parent="stage-2" source="s2-c1" style="edgeStyle=straight;html=1;strokeColor=#3b82f6;strokeWidth=1.4;endArrow=block;endFill=1;endSize=5;" target="s2-c2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s2-a2" edge="1" parent="stage-2" source="s2-c2" style="edgeStyle=straight;html=1;strokeColor=#3b82f6;strokeWidth=1.4;endArrow=block;endFill=1;endSize=5;" target="s2-c3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s2-a3" edge="1" parent="stage-2" source="s2-c3" style="edgeStyle=straight;html=1;strokeColor=#3b82f6;strokeWidth=1.4;endArrow=block;endFill=1;endSize=5;" target="s2-c4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow 2 -> 3 -->
+        <mxCell id="arr-2-3" edge="1" parent="1" source="stage-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.8;strokeColor=#475569;endArrow=block;endFill=1;endSize=6;" target="stage-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Stage 3: Feature & Label Extraction -->
+        <mxCell id="stage-3" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#fffbeb;strokeColor=#f59e0b;strokeWidth=1.2;fontStyle=1;fontSize=13;fontColor=#78350f;startSize=28;rounded=1;arcSize=8;shadow=0;" value="3. Feature &amp; Label Extraction" vertex="1">
+          <mxGeometry height="240" width="220" x="500" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-c1" parent="stage-3" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#fde68a;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="&lt;b&gt;Spatial Layout Tensors&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#5c4033&quot; style=&quot;font-size: 11px;&quot;&gt;RUDY, Pins, Density [&lt;i&gt;X&lt;/i&gt; &amp;isin; &amp;#8477;&lt;sup&gt;&lt;i&gt;C&lt;/i&gt;&amp;times;&lt;i&gt;H&lt;/i&gt;&amp;times;&lt;i&gt;W&lt;/i&gt;&lt;/sup&gt;]&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="196" x="12" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-c2" parent="stage-3" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#fde68a;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="&lt;b&gt;Design &amp;amp; PDK Constraints&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#5c4033&quot; style=&quot;font-size: 11px;&quot;&gt;Process Rules, Util, AR [&lt;i&gt;P&lt;/i&gt; &amp;isin; &amp;#8477;&lt;sup&gt;&lt;i&gt;d&lt;/i&gt;&lt;/sup&gt;]&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="196" x="12" y="102" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-c3" parent="stage-3" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#fde68a;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="&lt;b&gt;Multi-Class DRV Targets&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#5c4033&quot; style=&quot;font-size: 11px;&quot;&gt;Spacing, Shorts, Others [&lt;i&gt;Y&lt;/i&gt; &amp;isin; {0,1}&lt;sup&gt;&lt;i&gt;K&lt;/i&gt;&amp;times;&lt;i&gt;H&#39;&lt;/i&gt;&amp;times;&lt;i&gt;W&#39;&lt;/i&gt;&lt;/sup&gt;]&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="196" x="12" y="166" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow 3 -> 4 -->
+        <mxCell id="arr-3-4" edge="1" parent="1" source="stage-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.8;strokeColor=#475569;endArrow=block;endFill=1;endSize=6;" target="stage-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Stage 4: Conditioned Predictor -->
+        <mxCell id="stage-4" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#f0fdf4;strokeColor=#4ade80;strokeWidth=1.2;fontStyle=1;fontSize=13;fontColor=#14532d;startSize=28;rounded=1;arcSize=8;shadow=0;" value="4. Conditioned Predictor" vertex="1">
+          <mxGeometry height="240" width="205" x="750" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="s4-c1" parent="stage-4" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#bbf7d0;strokeWidth=1;fontSize=12;fontColor=#0f172a;arcSize=10;" value="&lt;b&gt;Conditioned Layout Model&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#166534&quot; style=&quot;font-size: 11px;&quot;&gt;CNN + FiLM / Cross-Attention&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="181" x="12" y="42" as="geometry" />
+        </mxCell>
+        <mxCell id="s4-c2" parent="stage-4" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fillColor=#ffffff;strokeColor=#bbf7d0;strokeWidth=1;fontSize=12;fontColor=#0f172a;align=left;spacingLeft=10;arcSize=10;" value="&lt;b&gt;Evidential Prediction Head&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#166534&quot; style=&quot;font-size: 11px;&quot;&gt;&amp;bull; Class Probs &lt;i&gt;&amp;#374;&lt;/i&gt; (&amp;alpha;&lt;sub&gt;&lt;i&gt;k&lt;/i&gt;&lt;/sub&gt; / &lt;i&gt;S&lt;/i&gt;&lt;sub&gt;&lt;i&gt;k&lt;/i&gt;&lt;/sub&gt;)&lt;br&gt;&amp;bull; Uncertainty &lt;i&gt;U&lt;/i&gt; (2 / &lt;i&gt;S&lt;/i&gt;&lt;sub&gt;&lt;i&gt;k&lt;/i&gt;&lt;/sub&gt;)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="96" width="181" x="12" y="118" as="geometry" />
+        </mxCell>
+        <mxCell id="s4-a1" edge="1" parent="stage-4" source="s4-c1" style="edgeStyle=straight;html=1;strokeColor=#22c55e;strokeWidth=1.4;endArrow=block;endFill=1;endSize=5;" target="s4-c2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
