@@ -3,6 +3,7 @@ import argparse
 import os
 import yaml
 import torch
+import csv
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
 from torch.optim.lr_scheduler import CosineAnnealingLR
@@ -79,7 +80,7 @@ def main():
     parser = argparse.ArgumentParser(description="Zero-shot training for LiteDRC")
     parser.add_argument("--train-pdk", type=str, default="sky130", help="Training PDK")
     parser.add_argument("--test-pdk", type=str, default="gf180", help="Testing PDK")
-    parser.add_argument("--cond", type=str, choices=["none", "film", "cross_attn"], default="cross_attn", help="Conditioning module")
+    parser.add_argument("--cond", type=str, choices=["none", "concat", "film", "cross_attn"], default="cross_attn", help="Conditioning module")
     parser.add_argument("--loss", type=str, choices=["edl", "focal"], default="edl", help="Loss function")
     parser.add_argument("--use-distances", action="store_true", help="Use power grid distance channels")
     parser.add_argument("--data-root", type=str, default="data/processed", help="Path to processed dataset root")
@@ -149,10 +150,13 @@ def main():
     in_channels = model_cfg.get("in_channels", 3) + (2 if args.use_distances else 0)
     num_classes = model_cfg.get("num_classes", 3)
     
-    if args.cond == "none":
-        model = EvidentialLightweightRegionNet(in_channels=in_channels, num_classes=num_classes, use_film=False).to(device)
-    elif args.cond == "film":
-        model = EvidentialLightweightRegionNet(in_channels=in_channels, num_classes=num_classes, use_film=True).to(device)
+    if args.cond in ("none", "concat", "film"):
+        model = EvidentialLightweightRegionNet(
+            in_channels=in_channels,
+            num_classes=num_classes,
+            use_film=(args.cond == "film"),
+            cond_type=args.cond
+        ).to(device)
     else:
         model = EvidentialLightweightRegionNetAttn(in_channels=in_channels, num_classes=num_classes, use_film=True).to(device)
         
@@ -164,6 +168,11 @@ def main():
     save_path = os.path.join(args.out_dir, f"best_model_zeroshot_train_{args.train_pdk}_test_{args.test_pdk}_{args.cond}.pth")
     
     best_pr_auc = 0.0
+    
+    csv_path = os.path.join(args.out_dir, f"train_log_{args.train_pdk}_to_{args.test_pdk}_{args.cond}.csv")
+    with open(csv_path, "w", newline="") as f:
+        csv.writer(f).writerow(["epoch", "train_loss", "val_source_pr_auc", "val_target_pr_auc"])
+
     for epoch in range(epochs):
         t_loss = train_epoch(model, train_loader, optimizer, criterion, device, epoch)
         _, v_pr_source = validate(model, val_source_loader, criterion, device, max_epoch=epochs)
@@ -176,6 +185,9 @@ def main():
             best_pr_auc = v_pr_source
             torch.save(model.state_dict(), save_path)
             print(f"  --> Saved new best model to {save_path}")
+    
+    with open(csv_path, "a", newline="") as f:
+        csv.writer(f).writerow([epoch + 1, round(t_loss, 6), round(v_pr_source, 6), round(v_pr_target, 6)])
 
 if __name__ == "__main__":
     main()
