@@ -205,7 +205,7 @@ def main():
                         lr=lr,
                         weight_decay=1e-2
                     )
-                    criterion = BetaEDLLoss(annealing_steps=100)
+                    criterion = BetaEDLLoss(annealing_epochs=100)
 
                     best_metrics = {
                         "PR_AUC": -1.0,
@@ -231,7 +231,7 @@ def main():
 
                         optimizer.zero_grad()
                         preds = model(features, pdk_meta, pdk_id)
-                        loss = criterion(preds["alpha"], preds["beta"], targets, current_step=step)
+                        loss = criterion(preds["alpha"], preds["beta"], targets, step)
                         loss.backward()
 
                         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)

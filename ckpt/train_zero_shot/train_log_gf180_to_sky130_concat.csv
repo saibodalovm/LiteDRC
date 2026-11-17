@@ -1,0 +1,2 @@
+epoch,train_loss,val_source_pr_auc,val_target_pr_auc
+200,0.074956,0.620945,0.219866
