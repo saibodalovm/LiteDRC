@@ -1,0 +1,5 @@
+train_pdk,test_pdk,regime,cond,global_pr_auc,global_f1_pct,bin_pr_auc,bin_f1_pct,global_roc_auc,c0_short_pr_auc,c0_short_f1_pct,c1_spacing_pr_auc,c1_spacing_f1_pct,c2_others_pr_auc,c2_others_f1_pct,weights
+sky130,sky130,in_domain,concat,0.5692,58.21,0.7356,68.82,0.961,0.6199,62.71,0.426,51.5,0.6423,59.44,ckpt/train_zero_shot/best_model_zeroshot_train_sky130_test_gf180_concat.pth
+sky130,gf180,zero_shot,concat,0.2431,29.77,0.2338,27.45,0.9542,0.1594,22.38,0.4679,49.81,0.0162,6.06,ckpt/train_zero_shot/best_model_zeroshot_train_sky130_test_gf180_concat.pth
+gf180,gf180,in_domain,concat,0.7066,65.65,0.6947,65.22,0.9856,0.6881,65.28,0.7913,73.35,0.0074,2.27,ckpt/train_zero_shot/best_model_zeroshot_train_gf180_test_sky130_concat.pth
+gf180,sky130,zero_shot,concat,0.2451,34.14,0.6227,62.46,0.8929,0.3592,42.6,0.2546,32.85,0.3628,35.31,ckpt/train_zero_shot/best_model_zeroshot_train_gf180_test_sky130_concat.pth

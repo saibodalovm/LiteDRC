@@ -1,8 +1,6 @@
 __pycache__/ 
-*.pyc 
-*.pt 
-*.pth 
+*.pyc   
 .env 
-img/
-statistics/
-*.csv
+.venv/
+*.pyc
+__pycache__/
